@@ -276,8 +276,8 @@ export default function Dashboard() {
           <Text style={styles.editButtonText}>Edit Baseline</Text>
         </Pressable>
 
-        <Pressable>
-          <Card title="Today’s Workout" value="Interval Run - 20 min" sub="Tap to View Workout" />
+        <Pressable onPress={() => router.push("/workout")}>
+         <Card title="Today’s Workout" value="Interval Run - 20 min" sub="Tap to View Workout" />
         </Pressable>
 
         {weather.status === "loading" ? (
