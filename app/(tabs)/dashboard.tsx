@@ -1,5 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
+import { router } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import { getAppData } from "../lib/storage";
@@ -17,7 +18,6 @@ function daysUntilISO(iso?: string) {
   return Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
 }
 
-// Accepts "MM:SS" or "M:SS" or "HH:MM:SS"
 function parseTimeToSeconds(input: string) {
   const s = input.trim();
   if (!s) return null;
@@ -118,7 +118,6 @@ export default function Dashboard() {
       let alive = true;
 
       (async () => {
-        // 1) Load saved app data
         const data = await getAppData();
         if (!alive) return;
 
@@ -132,7 +131,6 @@ export default function Dashboard() {
 
         setTestDateISO(data.testDateISO);
 
-        // 2) Load weather
         try {
           setWeather({ status: "loading" });
 
@@ -147,7 +145,6 @@ export default function Dashboard() {
             last ??
             (await Location.getCurrentPositionAsync({
               accuracy: Location.Accuracy.Balanced,
-              maximumAge: 60_000,
             }));
 
           const { latitude, longitude } = pos.coords;
@@ -185,9 +182,7 @@ export default function Dashboard() {
 
   const countdown = useMemo(() => daysUntilISO(testDateISO), [testDateISO]);
 
-  // REAL Readiness Calculation
   const readiness = useMemo(() => {
-    // Require baseline + goals + date for meaningful readiness
     if (!testDateISO || countdown === null) {
       return { label: "Set Up Needed", color: "#6B7280", sub: "Add a test date." };
     }
@@ -213,7 +208,6 @@ export default function Dashboard() {
       return { label: "Set Up Needed", color: "#6B7280", sub: "Enter baseline + goals." };
     }
 
-    // if already at/above goals (run goal is “lower is better”)
     const meetsRun = baseRun <= goalRun;
     const meetsPush = basePush >= goalPush;
     const meetsSit = baseSit >= goalSit;
@@ -222,8 +216,6 @@ export default function Dashboard() {
       return { label: "On Track", color: "#2ECC71", sub: "Baseline meets all goals." };
     }
 
-    // Not at goal yet:
-    // <= 21 days -> At Risk, otherwise Needs Improvement
     const timeIsClose = countdown <= 21;
 
     const deficits: string[] = [];
@@ -265,17 +257,9 @@ export default function Dashboard() {
       <Text style={styles.header}>Dashboard</Text>
 
       <View style={styles.cards}>
-        <Card
-          title="Readiness Status"
-          value={readiness.label}
-          valueColor={readiness.color}
-          sub={readiness.sub}
-        />
+        <Card title="Readiness Status" value={readiness.label} valueColor={readiness.color} sub={readiness.sub} />
 
-        <Card
-          title="Test Countdown"
-          value={countdown === null ? "No date set" : `${countdown} Days Remaining`}
-        />
+        <Card title="Test Countdown" value={countdown === null ? "No date set" : `${countdown} Days Remaining`} />
 
         <Card title="Weather (Training)" value={weatherLine} sub={weatherSub} />
 
@@ -286,12 +270,11 @@ export default function Dashboard() {
               ? `Run: ${mileTime || "—"}  •  Push-ups: ${pushUps || "—"}  •  Sit-ups: ${sitUps || "—"}`
               : "No baseline saved"
           }
-          sub={
-            goalMileTime || goalPushUps || goalSitUps
-              ? `Goals — Run: ${goalMileTime || "—"} • Push-ups: ${goalPushUps || "—"} • Sit-ups: ${goalSitUps || "—"}`
-              : undefined
-          }
         />
+
+        <Pressable style={styles.editButton} onPress={() => router.push("/baseline?mode=edit")}>
+          <Text style={styles.editButtonText}>Edit Baseline</Text>
+        </Pressable>
 
         <Pressable>
           <Card title="Today’s Workout" value="Interval Run - 20 min" sub="Tap to View Workout" />
@@ -324,4 +307,17 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 13, fontWeight: "600", color: "#666" },
   cardValue: { marginTop: 8, fontSize: 18, fontWeight: "800", color: "#111", textAlign: "center" },
   cardSub: { marginTop: 6, fontSize: 13, color: "#0B3A53", fontWeight: "600", textAlign: "center" },
+
+  editButton: {
+    marginTop: -6,
+    backgroundColor: "#0B3A53",
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  editButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "700",
+  },
 });

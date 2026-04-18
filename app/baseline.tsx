@@ -1,19 +1,35 @@
-import { router } from "expo-router";
-import React, { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { updateAppData } from "./lib/storage";
+import { getAppData, updateAppData } from "./lib/storage";
 
 export default function Baseline() {
+  const { mode } = useLocalSearchParams(); 
+  const isEditMode = mode === "edit"; 
+
   const [mileTime, setMileTime] = useState("");
   const [pushUps, setPushUps] = useState("");
   const [sitUps, setSitUps] = useState("");
+
+  useEffect(() => { 
+    const loadData = async () => {
+      const data = await getAppData();
+      setMileTime(data.baseline?.mileTime ?? "");
+      setPushUps(data.baseline?.pushUps ?? "");
+      setSitUps(data.baseline?.sitUps ?? "");
+    };
+
+    loadData();
+  }, []);
 
   const canContinue =
     mileTime.trim() !== "" || pushUps.trim() !== "" || sitUps.trim() !== "";
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Baseline</Text>
+      <Text style={styles.title}>
+        {isEditMode ? "Edit Baseline" : "Baseline"} {}
+      </Text>
 
       <Text style={styles.label}>1.5 Mile Time</Text>
       <TextInput
@@ -52,10 +68,17 @@ export default function Baseline() {
           await updateAppData({
             baseline: { mileTime, pushUps, sitUps },
           });
-          router.push("/goal");
+
+          if (isEditMode) { 
+            router.push("/(tabs)/dashboard"); 
+          } else {
+            router.push("/goal"); 
+          }
         }}
       >
-        <Text style={styles.buttonText}>Continue</Text>
+        <Text style={styles.buttonText}>
+          {isEditMode ? "Save Changes" : "Continue"} {/* NEW: dynamic button text */}
+        </Text>
       </Pressable>
 
       <Pressable onPress={() => router.back()}>
