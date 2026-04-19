@@ -235,6 +235,85 @@ export default function Dashboard() {
     return { label: "Needs Improvement", color: "#F59E0B", sub: `${sub} • Time left: ${countdown}d.` };
   }, [mileTime, pushUps, sitUps, goalMileTime, goalPushUps, goalSitUps, testDateISO, countdown]);
 
+  const workoutInfo = useMemo(() => {
+    const unmetGoals: string[] = [];
+
+    const currentRun = parseTimeToSeconds(mileTime);
+    const targetRun = parseTimeToSeconds(goalMileTime);
+
+    const currentPush = toIntOrNull(pushUps);
+    const targetPush = toIntOrNull(goalPushUps);
+
+    const currentSit = toIntOrNull(sitUps);
+    const targetSit = toIntOrNull(goalSitUps);
+
+    if (currentRun !== null && targetRun !== null && currentRun > targetRun) {
+      unmetGoals.push("run");
+    }
+
+    if (currentPush !== null && targetPush !== null && currentPush < targetPush) {
+      unmetGoals.push("push");
+    }
+
+    if (currentSit !== null && targetSit !== null && currentSit < targetSit) {
+      unmetGoals.push("sit");
+    }
+
+    if (unmetGoals.length === 0) {
+      return {
+        title: "Maintenance / Recovery",
+        sub: "Tap to View Workout",
+      };
+    }
+
+    if (unmetGoals.includes("run") && unmetGoals.includes("push") && unmetGoals.includes("sit")) {
+      return {
+        title: "Full PAT Prep - 30 min",
+        sub: "Tap to View Workout",
+      };
+    }
+
+    if (unmetGoals.includes("run") && unmetGoals.includes("push")) {
+      return {
+        title: "Run + Push-up Focus - 25 min",
+        sub: "Tap to View Workout",
+      };
+    }
+
+    if (unmetGoals.includes("run") && unmetGoals.includes("sit")) {
+      return {
+        title: "Run + Core Focus - 25 min",
+        sub: "Tap to View Workout",
+      };
+    }
+
+    if (unmetGoals.includes("push") && unmetGoals.includes("sit")) {
+      return {
+        title: "Strength + Core Focus - 20 min",
+        sub: "Tap to View Workout",
+      };
+    }
+
+    if (unmetGoals.includes("run")) {
+      return {
+        title: "Run Focus - 20 min",
+        sub: "Tap to View Workout",
+      };
+    }
+
+    if (unmetGoals.includes("push")) {
+      return {
+        title: "Push-up Focus - 15 min",
+        sub: "Tap to View Workout",
+      };
+    }
+
+    return {
+      title: "Sit-up Focus - 15 min",
+      sub: "Tap to View Workout",
+    };
+  }, [mileTime, pushUps, sitUps, goalMileTime, goalPushUps, goalSitUps]);
+
   const weatherLine = useMemo(() => {
     if (weather.status === "loading") return "Loading weather…";
     if (weather.status === "denied") return "Location denied";
@@ -277,7 +356,7 @@ export default function Dashboard() {
         </Pressable>
 
         <Pressable onPress={() => router.push("/workout")}>
-         <Card title="Today’s Workout" value="Interval Run - 20 min" sub="Tap to View Workout" />
+          <Card title="Today’s Workout" value={workoutInfo.title} sub={workoutInfo.sub} />
         </Pressable>
 
         {weather.status === "loading" ? (
