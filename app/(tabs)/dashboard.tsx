@@ -3,7 +3,7 @@ import * as Location from "expo-location";
 import { router } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
-import { getAppData } from "../lib/storage";
+import { getAppData, resetAppData } from "../lib/storage";
 
 function daysUntilISO(iso?: string) {
   if (!iso) return null;
@@ -112,6 +112,22 @@ export default function Dashboard() {
   const [testDateISO, setTestDateISO] = useState<string | undefined>(undefined);
 
   const [weather, setWeather] = useState<WeatherState>({ status: "idle" });
+
+  const handleResetAppData = async () => {
+    await resetAppData();
+
+    setMileTime("");
+    setPushUps("");
+    setSitUps("");
+
+    setGoalMileTime("");
+    setGoalPushUps("");
+    setGoalSitUps("");
+
+    setTestDateISO(undefined);
+
+    router.replace("/baseline");
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -260,58 +276,34 @@ export default function Dashboard() {
     }
 
     if (unmetGoals.length === 0) {
-      return {
-        title: "Maintenance / Recovery",
-        sub: "Tap to View Workout",
-      };
+      return { title: "Maintenance / Recovery", sub: "Tap to View Workout" };
     }
 
     if (unmetGoals.includes("run") && unmetGoals.includes("push") && unmetGoals.includes("sit")) {
-      return {
-        title: "Full PAT Prep - 30 min",
-        sub: "Tap to View Workout",
-      };
+      return { title: "Full PAT Prep - 30 min", sub: "Tap to View Workout" };
     }
 
     if (unmetGoals.includes("run") && unmetGoals.includes("push")) {
-      return {
-        title: "Run + Push-up Focus - 25 min",
-        sub: "Tap to View Workout",
-      };
+      return { title: "Run + Push-up Focus - 25 min", sub: "Tap to View Workout" };
     }
 
     if (unmetGoals.includes("run") && unmetGoals.includes("sit")) {
-      return {
-        title: "Run + Core Focus - 25 min",
-        sub: "Tap to View Workout",
-      };
+      return { title: "Run + Core Focus - 25 min", sub: "Tap to View Workout" };
     }
 
     if (unmetGoals.includes("push") && unmetGoals.includes("sit")) {
-      return {
-        title: "Strength + Core Focus - 20 min",
-        sub: "Tap to View Workout",
-      };
+      return { title: "Strength + Core Focus - 20 min", sub: "Tap to View Workout" };
     }
 
     if (unmetGoals.includes("run")) {
-      return {
-        title: "Run Focus - 20 min",
-        sub: "Tap to View Workout",
-      };
+      return { title: "Run Focus - 20 min", sub: "Tap to View Workout" };
     }
 
     if (unmetGoals.includes("push")) {
-      return {
-        title: "Push-up Focus - 15 min",
-        sub: "Tap to View Workout",
-      };
+      return { title: "Push-up Focus - 15 min", sub: "Tap to View Workout" };
     }
 
-    return {
-      title: "Sit-up Focus - 15 min",
-      sub: "Tap to View Workout",
-    };
+    return { title: "Sit-up Focus - 15 min", sub: "Tap to View Workout" };
   }, [mileTime, pushUps, sitUps, goalMileTime, goalPushUps, goalSitUps]);
 
   const weatherLine = useMemo(() => {
@@ -337,9 +329,7 @@ export default function Dashboard() {
 
       <View style={styles.cards}>
         <Card title="Readiness Status" value={readiness.label} valueColor={readiness.color} sub={readiness.sub} />
-
         <Card title="Test Countdown" value={countdown === null ? "No date set" : `${countdown} Days Remaining`} />
-
         <Card title="Weather (Training)" value={weatherLine} sub={weatherSub} />
 
         <Card
@@ -353,6 +343,10 @@ export default function Dashboard() {
 
         <Pressable style={styles.editButton} onPress={() => router.push("/baseline?mode=edit")}>
           <Text style={styles.editButtonText}>Edit Baseline</Text>
+        </Pressable>
+
+        <Pressable style={styles.resetButton} onPress={handleResetAppData}>
+          <Text style={styles.resetButtonText}>Reset App Data</Text>
         </Pressable>
 
         <Pressable onPress={() => router.push("/workout")}>
@@ -395,6 +389,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   editButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+  resetButton: {
+    marginTop: -6,
+    backgroundColor: "#B00020",
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  resetButtonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "700",

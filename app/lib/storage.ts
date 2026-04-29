@@ -35,3 +35,7 @@ export async function updateAppData(patch: Partial<AppData>): Promise<void> {
   const merged: AppData = { ...current, ...patch };
   await AsyncStorage.setItem(KEY, JSON.stringify(merged));
 }
+
+export async function resetAppData(): Promise<void> {
+  await AsyncStorage.removeItem(KEY);
+}

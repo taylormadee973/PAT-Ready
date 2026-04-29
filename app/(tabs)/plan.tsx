@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { getAppData } from "../lib/storage";
 
