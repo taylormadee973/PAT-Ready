@@ -1,11 +1,11 @@
 import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { updateAppData } from "./lib/storage";
 
@@ -52,7 +52,7 @@ export default function TestDate() {
       <Text style={styles.label}>MM/DD/YYYY</Text>
       <TextInput
         style={styles.input}
-        placeholder="03/11/2026"
+        placeholder="Enter Date"
         placeholderTextColor="#6B7280"
         value={dateText}
         onChangeText={setDateText}

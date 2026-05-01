@@ -34,7 +34,7 @@ export default function Baseline() {
       <Text style={styles.label}>1.5 Mile Time</Text>
       <TextInput
         style={styles.input}
-        placeholder="10:45"
+        placeholder="mm:ss"
         placeholderTextColor="#6B7280"
         value={mileTime}
         onChangeText={setMileTime}
@@ -44,7 +44,7 @@ export default function Baseline() {
       <Text style={styles.label}>Push-ups</Text>
       <TextInput
         style={styles.input}
-        placeholder="25"
+        placeholder="Enter reps"
         placeholderTextColor="#6B7280"
         value={pushUps}
         onChangeText={setPushUps}
@@ -54,7 +54,7 @@ export default function Baseline() {
       <Text style={styles.label}>Sit-ups</Text>
       <TextInput
         style={styles.input}
-        placeholder="30"
+        placeholder="Enter reps"
         placeholderTextColor="#6B7280"
         value={sitUps}
         onChangeText={setSitUps}

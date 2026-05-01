@@ -39,7 +39,7 @@ export default function Goal() {
       <Text style={styles.label}>Goal 1.5 Mile Time</Text>
       <TextInput
         style={styles.input}
-        placeholder="10:00"
+        placeholder="mm:ss"
         placeholderTextColor="#6B7280"
         value={goalMileTime}
         onChangeText={setGoalMileTime}
@@ -49,7 +49,7 @@ export default function Goal() {
       <Text style={styles.label}>Goal Push-ups</Text>
       <TextInput
         style={styles.input}
-        placeholder="35"
+        placeholder="Enter reps"
         placeholderTextColor="#6B7280"
         value={goalPushUps}
         onChangeText={setGoalPushUps}
@@ -59,7 +59,7 @@ export default function Goal() {
       <Text style={styles.label}>Goal Sit-ups</Text>
       <TextInput
         style={styles.input}
-        placeholder="40"
+        placeholder="Enter reps"
         placeholderTextColor="#6B7280"
         value={goalSitUps}
         onChangeText={setGoalSitUps}
