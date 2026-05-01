@@ -2,7 +2,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
 import { router } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { getAppData, resetAppData } from "../lib/storage";
 
 function daysUntilISO(iso?: string) {
@@ -45,7 +45,8 @@ function parseTimeToSeconds(input: string) {
       mm < 0 ||
       mm >= 60 ||
       hh < 0
-    ) return null;
+    )
+      return null;
     return hh * 3600 + mm * 60 + ss;
   }
 
@@ -324,12 +325,18 @@ export default function Dashboard() {
   }, [weather]);
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={true}
+    >
       <Text style={styles.header}>Dashboard</Text>
 
       <View style={styles.cards}>
         <Card title="Readiness Status" value={readiness.label} valueColor={readiness.color} sub={readiness.sub} />
+
         <Card title="Test Countdown" value={countdown === null ? "No date set" : `${countdown} Days Remaining`} />
+
         <Card title="Weather (Training)" value={weatherLine} sub={weatherSub} />
 
         <Card
@@ -345,12 +352,12 @@ export default function Dashboard() {
           <Text style={styles.editButtonText}>Edit Baseline</Text>
         </Pressable>
 
-        <Pressable style={styles.resetButton} onPress={handleResetAppData}>
-          <Text style={styles.resetButtonText}>Reset App Data</Text>
-        </Pressable>
-
         <Pressable onPress={() => router.push("/workout")}>
           <Card title="Today’s Workout" value={workoutInfo.title} sub={workoutInfo.sub} />
+        </Pressable>
+
+        <Pressable style={styles.resetButton} onPress={handleResetAppData}>
+          <Text style={styles.resetButtonText}>Reset Progress</Text>
         </Pressable>
 
         {weather.status === "loading" ? (
@@ -359,35 +366,74 @@ export default function Dashboard() {
           </View>
         ) : null}
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "white", padding: 24 },
-  header: { marginTop: 70, fontSize: 32, fontWeight: "700", textAlign: "center" },
-  cards: { marginTop: 30, gap: 18 },
+  container: {
+    flex: 1,
+    backgroundColor: "white",
+  },
+
+  scrollContent: {
+    paddingHorizontal: 18,
+    paddingTop: 24,
+    paddingBottom: 180,
+  },
+
+  header: {
+    marginTop: 20,
+    fontSize: 30,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+
+  cards: {
+    marginTop: 22,
+    gap: 14,
+  },
 
   card: {
     borderWidth: 1,
     borderColor: "#E6E6E6",
     borderRadius: 14,
-    paddingVertical: 18,
-    paddingHorizontal: 18,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     alignItems: "center",
     backgroundColor: "white",
   },
-  cardTitle: { fontSize: 13, fontWeight: "600", color: "#666" },
-  cardValue: { marginTop: 8, fontSize: 18, fontWeight: "800", color: "#111", textAlign: "center" },
-  cardSub: { marginTop: 6, fontSize: 13, color: "#0B3A53", fontWeight: "600", textAlign: "center" },
+
+  cardTitle: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#666",
+  },
+
+  cardValue: {
+    marginTop: 6,
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#111",
+    textAlign: "center",
+  },
+
+  cardSub: {
+    marginTop: 5,
+    fontSize: 13,
+    color: "#0B3A53",
+    fontWeight: "600",
+    textAlign: "center",
+  },
 
   editButton: {
-    marginTop: -6,
+    marginTop: 0,
     backgroundColor: "#0B3A53",
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: "center",
   },
+
   editButtonText: {
     color: "white",
     fontSize: 16,
@@ -395,12 +441,13 @@ const styles = StyleSheet.create({
   },
 
   resetButton: {
-    marginTop: -6,
+    marginTop: 0,
     backgroundColor: "#B00020",
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: "center",
   },
+
   resetButtonText: {
     color: "white",
     fontSize: 16,
